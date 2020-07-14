@@ -356,7 +356,7 @@ const DrawerNavigatorExample = createDrawerNavigator({
           source={require('../images/faq1.png')}
           style={[styles.icon, {tintColor: tintColor, width: 25, height: 25 }]}
         />
-       
+
       ),
     },
   },

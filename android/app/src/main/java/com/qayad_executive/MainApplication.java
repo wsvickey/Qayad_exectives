@@ -14,9 +14,13 @@ import com.facebook.soloader.SoLoader;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import java.lang.reflect.InvocationTargetException;
+import com.vonovak.AddCalendarEventPackage;
 import java.util.Arrays;
 import java.util.List;
 import com.BV.LinearGradient.LinearGradientPackage;
+import com.reactnativecommunity.netinfo.NetInfoPackage;
+import com.marianhello.bgloc.react.BackgroundGeolocationPackage;
+import org.pgsqlite.SQLitePluginPackage;
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost =
@@ -29,13 +33,17 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         protected List<ReactPackage> getPackages() {
           return Arrays.<ReactPackage>asList(
-                  
+
                       new MainReactPackage(),
             new ImagePickerPackage(),
             new RNDeviceInfo(),
             new ReanimatedPackage(),
                   new RNGestureHandlerPackage(),
-                  new LinearGradientPackage()
+                  new LinearGradientPackage(),
+                  new NetInfoPackage(),
+                  new AddCalendarEventPackage(),
+                  new BackgroundGeolocationPackage(),
+                  new SQLitePluginPackage()
 
           );
         }
