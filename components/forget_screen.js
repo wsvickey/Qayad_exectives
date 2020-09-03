@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop:50,
-    backgroundColor: '#5c0831',
+    backgroundColor: '#003342',
     alignItems: 'center',
     padding: 8,
   },
@@ -138,7 +138,7 @@ marginTop:100,
   },
    textStyle: {
     fontSize:20,
-	  color: '#5c0831',
+	  color: '#003342',
     textAlign: 'center',
     fontWeight: 'bold',
 

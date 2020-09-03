@@ -1,8 +1,8 @@
-package com.portal;
+package com.qayad_executive;
 
 import android.app.Application;
 import android.content.Context;
-import com.facebook.react.PackageList;
+
 import com.facebook.react.ReactApplication;
 import com.imagepicker.ImagePickerPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
@@ -11,7 +11,6 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import java.lang.reflect.InvocationTargetException;
 import com.vonovak.AddCalendarEventPackage;
@@ -34,10 +33,10 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           return Arrays.<ReactPackage>asList(
 
-                      new MainReactPackage(),
+             new MainReactPackage(),
             new ImagePickerPackage(),
             new RNDeviceInfo(),
-            new ReanimatedPackage(),
+               new ReanimatedPackage(),
                   new RNGestureHandlerPackage(),
                   new LinearGradientPackage(),
                   new NetInfoPackage(),

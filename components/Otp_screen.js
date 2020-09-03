@@ -17,7 +17,7 @@ export default class Otp_screen extends React.Component {
    const {navigate} = this.props.navigation;
     return (
       
-     <ImageBackground source={require('./../assets/back_light.png')} style={styles.body} behavior="padding" enabled>
+     <ImageBackground source={require('../assets/back_light.png')} style={styles.body} behavior="padding" enabled>
  
 <ScrollView style={{width:'100%',height:'100%'}}>
   <View style={styles.container}>
@@ -26,12 +26,12 @@ export default class Otp_screen extends React.Component {
         source={(require('../assets/logo_full_maroon.png'))}
         />
      
-  <Text  style={{color:'#5C0731',fontSize:16}}>Enter One Time Password (OTP) </Text>
-  <Text  style={{color:'#5C0731',marginBottom:20,fontSize:16}}>provided to you by QAYAD managment </Text>
+  <Text  style={{color:'#003342',fontSize:16}}>Enter One Time Password (OTP) </Text>
+  <Text  style={{color:'#003342',marginBottom:20,fontSize:16}}>provided to you by QAYAD managment </Text>
   <View style={styles.EdittextStyle}>
 
   <OTPInputView
-    style={{width: '80%', height: 200,color: '#5c0831'}}
+    style={{width: '80%', height: 200,color: '#003342'}}
     pinCount={6}
     // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
     // onCodeChanged = {code => { this.setState({code})}}
@@ -61,7 +61,7 @@ export default class Otp_screen extends React.Component {
                
 
                   let deviceId = DeviceInfo.getDeviceId();
-                  fetch('http://amaapi.qayad.com/api/',{
+                  fetch('https://amaapi.qayad.com/api/',{
                     method:'post',
                     headers: {
                       'Accept': 'application/json',
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height:'auto',
     paddingTop:10,
-    backgroundColor: '#5c0831',
+    backgroundColor: '#003342',
 
     alignItems: 'center',
    
@@ -158,13 +158,13 @@ const styles = StyleSheet.create({
       height: 40,
       borderRadius: 5 ,
       margin: 10,
-      color: '#5c0831',
+      color: '#003342',
   },
      buttonStyle: {
        width:300,
       height: 45,
 	padding:10,
-	backgroundColor: '#5c0831',
+	backgroundColor: '#003342',
   borderRadius:5,
   justifyContent: 'center', 
   alignItems: 'center',
@@ -197,8 +197,8 @@ borderStyleBase: {
 
 borderStyleHighLighted: {
 
-  borderColor: "#5c0831",
-  color:"#5c0831",
+  borderColor: "#003342",
+  color:"#003342",
 },
 
 underlineStyleBase: {
@@ -206,7 +206,7 @@ underlineStyleBase: {
   height: 45,
   borderWidth: 0,
   borderBottomWidth: 1,
-  borderBottomColor:"#5c0831"
+  borderBottomColor:"#003342"
 },
 
 underlineStyleHighLighted: {

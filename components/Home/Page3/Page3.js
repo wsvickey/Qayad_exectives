@@ -1,147 +1,253 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
+  View, FlatList, ActivityIndicator, AsyncStorage,
   StyleSheet,
   Text,
-  View,
-  FlatList,
   Image,
-  TouchableOpacity,
-  AsyncStorage,
+  TouchableOpacity
 } from 'react-native';
-
+import { ListItem, SearchBar } from 'react-native-elements';
 import DeviceInfo from 'react-native-device-info';
+let deviceId, authvalue;
 
+//import Database from '../../Database/database';
+//const db = new Database();
 class Page3 extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-  
-      headerRight: () => (
-   
-          <TouchableOpacity 
-          onPress={
-            () => navigation.navigate('contact_add')}>
-        <Image
-          style={{width:25,height:25,marginRight:10}}
-          source={require('../../images/edit-icon.png')}
-          on
-        />
-      </TouchableOpacity>
-      ),
-     
+
+      // headerRight: () => (
+
+      //   <TouchableOpacity
+      //     onPress={
+      //       () => navigation.navigate('contact_add')}>
+      //     <Image
+      //       style={{ width: 25, height: 25, marginRight: 10 }}
+      //       source={require('../../images/edit-icon.png')}
+      //       on
+      //     />
+      //   </TouchableOpacity>
+      // ),
+
     };
   };
-  constructor () {
-    super();
+  constructor (props) {
+    super(props);
+
     this.state = {
-      auth:'',
-      dataSource: []
+      loading: false,
+      data: [],
+      error: null,
     };
+
+    this.arrayholder = [];
   }
+
+
+  async componentDidMount() {
+    authvalue = await AsyncStorage.getItem('Auth');
+    this.makeRemoteRequest();
+    this.focusListener = this.props.navigation.addListener('didFocus', () => {
+      this.makeRemoteRequest()
+    })
+  }
+  componentWillUnmount() {
+    this.focusListener.remove()
+  }
+  makeRemoteRequest = () => {
+    deviceId = DeviceInfo.getDeviceId();
+
+    this.setState({ loading: true });
+    if (authvalue !== null) {
+      fetch('https://amaapi.qayad.com/api/', {
+
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+          mode: "8D8x0Sbnj89VrQDMcITyDw==",
+          led_type: "mtKCzpFHhDE=",
+          adid: deviceId,
+          auth: authvalue,
+        })
+
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          this.setState({
+            data: responseJson.QayadLeads,
+            error: responseJson.error || null,
+            loading: false,
+          });
+
+          // alert( JSON.stringify(this.state.data)  );
+
+
+
+          this.arrayholder = responseJson.QayadLeads;
+
+
+          
+        })
+
+        .catch((error) => {
+          console.log(error);
+
+          this.setState({ error, loading: false });
+        })
+        
+        .finally(() => {
+          this.setState({
+            loading: false
+          })
+        });
+    }
+
+
+
+  };
 
   renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{ backgroundColor: "#F0F0F0",width: '100%', height: 40, flex: 1, flexDirection: 'row', marginBottom: 3,marginLeft:5 }}
+      <TouchableOpacity style={{ backgroundColor: "#F0F0F0", width: '100%', height: 60, flex: 1, flexDirection: 'row', marginBottom: 3, marginLeft: 5 }}
         onPress={() =>
           this.props.navigation.navigate('contact_view', {
-            auther: item.name,
-            title: item.number,
-            pic: item.date,
+            leadid: item.id,
+            client_name: item.client_name,
+            client_number: item.client_number,
+            assign_date: item.assign_date,
+            duration: item.duration,
+            agent_name: item.agent_name,
           })
         }>
-
-      
-        <Text style={{ width: '45%', color: '#5c0831', alignSelf: 'center', fontWeight: 'normal', fontSize: 12, paddingLeft: 5 }} > {item.name}}</Text>
-
-        <Text style={{ width: '27%', color: '#5c0831', alignSelf: 'center', fontWeight: 'normal', fontSize: 12 }} > {item.number}</Text>
-        <Text style={{ width: '22%', color: '#5c0831', alignSelf: 'center', fontWeight: 'normal', fontSize: 12 }} > {item.date}</Text>
-
-
-        <View style={{  width: '3%', backgroundColor: "#5c0831",justifyContent:'center',alignContent:'center' }} >
-        <Image style={{ width: 10,height: 10, resizeMode: 'stretch' ,alignSelf:'center' }} source={ require('../../images/right-arrow.png') } />
-           
-      </View>
+        <View style={{ width: '97%', flex: 1, flexDirection: "column", }}>
        
+        <View style={{ height: '90%', flex: 1, flexDirection: "row", }}>
+        <View style={{ width: '50%', flex: 1, flexDirection: "column", }}>
+
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.client_name}</Text>
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.client_number}</Text>
+
+</View>
+
+<View style={{ width: '30%', flex: 1, flexDirection: 'column', }}>
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.assign_date}</Text>
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.duration}</Text>
+
+
+</View>
+           
+          </View>
+         
+          <View style={{ height: '10%', flex: 1, flexDirection: "row", alignItems:"center"}}>
+
+          <Text style={{ width: '30%',color: '#003342', fontWeight: 'bold', fontSize: 12, }} > Agent Name</Text>
+         <Text style={{ width: '70%',color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.agent_name}</Text>
+
+</View>
+          
+          
+        </View>
+
+
+        <View style={{ width: '3%', backgroundColor: "#003342", justifyContent: 'center', alignContent: 'center' }} >
+          <Image style={{ width: 10, height: 10, resizeMode: 'stretch', alignSelf: 'center' }} source={require('../../images/right-arrow.png')} />
+
+        </View>
+
       </TouchableOpacity>
     )
   }
- 
-  async componentDidMount(){
-    let deviceId = DeviceInfo.getDeviceId();
-    fetch('http://amaapi.qayad.com/api/',{
+  renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: '86%',
+          backgroundColor: '#CED0CE',
+          marginLeft: '14%',
+        }}
+      />
+    );
+  };
 
-      method:'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+  searchFilterFunction = text => {
+    this.setState({
+      value: text,
+    });
 
-      body:JSON.stringify({
-         mode:"jzg2YKUcUKCK6Em56h3tew==",
-         adid:deviceId,
-         auth:"YV46Ist8oaBc1z6cBcy6tg==",
-      })
+    const newData = this.arrayholder.filter(item => {
+      const itemData = `${item.client_name.toUpperCase()} ${item.client_number} ${item.duration} ${item.agent_name}`;
+      const textData = text.toUpperCase();
 
-      }).then((response) =>response.json())
-      .then((responseJson) =>
-      {
-        //alert(JSON.stringify(responseJson));
-        alert(responseJson[0].status);
-    // alert(responseJson);
-        // this.setState({
-        //   dataSource: responseJson
-        // })
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({
+      data: newData,
+    });
+  };
 
-     // alert(responseJson);
-      //  console.log(responseJson);
+  renderHeader = () => {
+    return (
+      <TouchableOpacity
+        onPress={
+          () => navigation.navigate('contact_add')}>
+        <Image
+          style={{ width: 25, height: 25, marginRight: 10 }}
+          source={require('../../images/add_contact.png')}
 
-      })
-
-      .catch((error) => {
-        console.log(error);
-        alert(error);
-      })
-  
-    
-    // AsyncStorage.getItem('Auth').then(value =>{
-    //   this.setState({'auth': value  })
-    //   //alert(value);
-     
-    // }
-      //AsyncStorage returns a promise so adding a callback to get the value
-    
-  
-      
-  }
-
+        />
+      </TouchableOpacity>
+    );
+  };
 
   render() {
+
     return (
       <View style={styles.container}>
- 
-
-        <View style={{ backgroundColor: "#fff",width: '100%', height: 40, flexDirection: 'row', marginBottom: 3 }}
-      >
-
-      
-        <Text style={{ width: '45%', color: '#5c0831', alignSelf: 'center', fontWeight: 'bold', fontSize: 12, paddingLeft: 5 }} > Name</Text>
-
-        <Text style={{ width: '30%', color: '#5c0831', alignSelf: 'center', fontWeight: 'bold', fontSize: 12 }} > Number</Text>
-        <Text style={{ width: '30%', color: '#5c0831', alignSelf: 'center', fontWeight: 'bold', fontSize: 12 }} >  Date</Text>
-
-
-     
-       
-      </View>
-
-        <FlatList
-          data={this.state.dataSource}
-          renderItem={this.renderItem}
-          keyExtractor={(item, index) => item.book_title}
+        <SearchBar
+          placeholder="Type Here..."
+          lightTheme
+          round
+          inputContainerStyle={{ backgroundColor: '#fff' }}
+          onChangeText={text => this.searchFilterFunction(text)}
+          autoCorrect={false}
+          value={this.state.value}
         />
-      </View>
-    )
+        <View style={{ backgroundColor: "#fff", width: '100%', height: 40, flexDirection: 'row', marginBottom: 3 }}
+        >
 
+
+          <Text style={{ width: '50%', color: '#003342', alignSelf: 'center', fontWeight: 'bold', fontSize: 12, paddingLeft: 5 }} > Name /  Phone No</Text>
+
+          <Text style={{ width: '50%', color: '#003342', alignSelf: 'center', fontWeight: 'bold', fontSize: 12 }} >  Date / Duration</Text>
+
+
+
+
+        </View>
+        {/* <Text> {JSON.stringify(this.state.data)}</Text>  */}
+        {this.state.loading ? <ActivityIndicator style={{
+          position: 'absolute', left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }} size="large" color="#003342" /> : (
+            <FlatList
+              data={this.state.data}
+              renderItem={this.renderItem}
+              keyExtractor={(item, index) => item.id}
+              extraData={this.state}
+            //  ItemSeparatorComponent={this.renderSeparator}
+            // ListHeaderComponent={this.renderHeader}
+            />
+          )}
+      </View>
+    );
   }
 }
 
@@ -151,20 +257,17 @@ const styles = StyleSheet.create({
     padding: 0,
 
     flex: 1,
-    flexDirection:'column'
+    flexDirection: 'column'
   },
   title:
   {
-    color: '#5c0831',
+    color: '#003342',
     padding: 5,
     alignSelf: "center",
     fontWeight: "bold",
     fontSize: 18,
 
   },
-
-
-
 
 });
 export default Page3;

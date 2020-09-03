@@ -9,7 +9,7 @@ import { white } from 'ansi-colors';
 import DeviceInfo from 'react-native-device-info';
 import usernameImg from './images/left-arrow.png';
 import passwordImg from './images/left-arrow.png';
-
+import AnimateLoadingButton from 'react-native-animate-loading-button';
 export default class App extends React.Component {
   static navigationOptions = { header: null };
 
@@ -24,7 +24,7 @@ export default class App extends React.Component {
    const { text, onPress} = this.props;
    const {navigate} = this.props.navigation;
     return (
-      <ScrollView style={{width:'100%',backgroundColor:'#5c0931'}}>
+      <ScrollView style={{width:'100%',backgroundColor:'#003342'}}>
      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
   
 
@@ -55,9 +55,20 @@ export default class App extends React.Component {
         </View>
 
           
-     <TouchableOpacity style={styles.buttonStyle}
-			 onPress={() => 
-            {
+        <View style={{ flex: 1, justifyContent: 'center',marginTop:150, }}>
+            <AnimateLoadingButton
+              ref={c => (this.loadingButton = c)}
+              width={300}
+              height={45}
+              title="Submit"
+              titleFontSize={16}
+              titleFontFamily="nexa_bold"
+              titleColor="#202646"
+              backgroundColor="#FFF"
+              activityIndicatorColor="#003342"
+              borderRadius={4}
+              onPress={() => {
+                this.loadingButton.showLoading(true);
                 if(this.state.mobileno.length==0 ){
                     ToastAndroid.show('Please Enter your mobile number',ToastAndroid.SHORT);
                     return;
@@ -72,8 +83,8 @@ export default class App extends React.Component {
                 // this.props.navigation.navigate('Otp');
 
                 let deviceId = DeviceInfo.getDeviceId();
-
-    fetch('http://amaapi.qayad.com/api/',{
+///alert(deviceId);
+    fetch('https://amaapi.qayad.com/api/',{
     method:'post',
     headers: {
       'Accept': 'application/json',
@@ -89,13 +100,18 @@ export default class App extends React.Component {
     }).then((response) => response.json())
      .then((responseJson) => {
       if(responseJson[0].status=='false'){
-        alert("Mobile Number Not Resigtered ");
+       // alert("Mobile Number Not Resigtered ");
+        ToastAndroid.show('Mobile Number Not Resigtered',ToastAndroid.SHORT);
+              
         //this.props.navigation.navigate('Second', { Email: UserEmail });
        //this.props.navigation.navigate('registration');
       }else if(responseJson[0].status=='true'){
         //alert(responseJson[0].status);
         //this.props.navigation.navigate('Second', { Email: UserEmail });
        this.props.navigation.navigate('Otp');
+      }else{
+       //alert(JSON.stringify(responseJson));
+       ToastAndroid.show(JSON.stringify(responseJson),ToastAndroid.SHORT);
       }
 
 
@@ -104,14 +120,12 @@ export default class App extends React.Component {
     });
             }
             
-            }
-            
-		  >
-         
-			 
-       <Text style={styles.textStyle}>Submit</Text>
-		  </TouchableOpacity>
-    
+          }
+      
+     
+
+          />
+        </View>
    
  </KeyboardAvoidingView>
       </ScrollView>
@@ -123,7 +137,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop:50,
-    backgroundColor: '#5c0831',
+    backgroundColor: '#003342',
     alignItems: 'center',
     padding: 8,
   },
@@ -171,7 +185,7 @@ marginTop:100,
   },
    textStyle: {
     fontSize:20,
-	  color: '#5c0831',
+	  color: '#003342',
     textAlign: 'center',
     fontWeight: 'bold',
 

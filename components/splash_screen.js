@@ -54,7 +54,7 @@ async componentDidMount() {
 
 const styles = StyleSheet.create({
    container: {
-    backgroundColor: '#5c0831',
+    backgroundColor: '#003342',
     padding: 0,
   },
 

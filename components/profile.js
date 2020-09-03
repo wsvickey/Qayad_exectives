@@ -8,11 +8,13 @@ import {
   Image,
   TouchableHighlight,
   TouchableOpacity,
-  CheckBox,
+  AsyncStorage,
   ScrollView
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { Sae, Hoshi } from 'react-native-textinput-effects';
 import ImagePicker from 'react-native-image-picker';
+import { Left } from 'native-base';
 const options = {
   title: 'Select Avatar',
   //customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
@@ -21,160 +23,102 @@ const options = {
     path: 'images',
   },
 };
-
+let fullname,profile_img,user_designation,u_email,u_mobile;
 class popup_form extends Component {
- 
-  constructor(props) {
+
+  constructor (props) {
     super(props);
-      this.state = { image: require('./images/user_male.png') ,
-    name:'',
-    disigna:'',
-    email:'',
-    phone:'',
+    this.state = {
+      image: require('./images/user_male.png'),
+      name: '',
+      disigna: '',
+      email: '',
+      phone: '',
 
     }
-    
-   }
-  myfun=()=>
-  {
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
-     
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response.uri };
-     
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-     
-        this.setState({
-          image: source,
-        });
-      }
-    });
+
+  }
+  async componentDidMount() {
+  
+    AsyncStorage.getItem('fullname').then((value) =>{ this.setState({name: value})});
+  //  AsyncStorage.getItem('profile_img').then((value) =>{ this.setState({image: value})});
+    AsyncStorage.getItem('user_designation').then((value) =>{this.setState({disigna: value}) });
+    AsyncStorage.getItem('u_email').then((value) =>{this.setState({email: value}) });
+    AsyncStorage.getItem('u_mobile').then((value) =>{this.setState({phone: value}) });
   }
   render() {
 
     return (
       <ScrollView style={styles.container}>
         <Text style={styles.title}>
-          AGENT PROFILE
+          SELL EXECUTIVE PROFILE
           </Text>
 
         <View style={{ flex: 1, flexDirection: "row", width: 143, height: 100 }}>
-         
+
           <TouchableHighlight style={{ width: 120, color: 'ff0' }}
-           >
+          >
             <Image source={this.state.image} style={{ height: 100, width: 130, borderBottomRightRadius: 60, borderTopRightRadius: 60, marginBottom: 20, borderWidth: 2, borderColor: '#CFC9CA' }} />
           </TouchableHighlight>
-
-          <TouchableHighlight style={{ height: 30, width: 30, position: 'absolute', right: 0, alignSelf: 'center' }}
-           onPress={() => this.myfun()}>
-            <Image source={require('./images/pedit.png')} style={{ height: 30, width: 30, marginBottom: 20, borderWidth: 2, borderRadius: 50, borderColor: '#CFC9CA' }} />
-          </TouchableHighlight>
-
         </View>
 
-        <View style={{ justifyContent: 'center', width: '100%' }}>
+        <View style={{ justifyContent: 'center', width: '100%',marginTop:25 }}>
 
           <View style={styles.EdittextStyle}>
 
             <Image source={require('./images/name.png')} style={styles.ImageStyle} />
+          
+            <View style={{ flex: 1, color: '#5C0731' }}>
+              <Text style={styles.input_title}>FULL NAME OF APPLICANT</Text>
+              <Text style={styles.input}>{this.state.name}</Text>
+            </View>
 
-            <TextInput
-              style={{ flex: 1, color: '#5C0731' }}
-              placeholder="Full Name"
-              underlineColorAndroid="transparent"
-              placeholderTextColor="gray"
-              keyboardType={'default'}
-              autoCapitalize="none"
-              onChangeText={(value) => this.setState({ name: value })}
-              value={this.state.name}
-            />
           </View>
 
           <View style={styles.EdittextStyle}>
+
             <Image source={require('./images/designation.png')} style={styles.ImageStyle} />
-            <TextInput
-              style={{ flex: 1, color: '#5C0731' }}
-              placeholder="Designation"
-              underlineColorAndroid="transparent"
-              placeholderTextColor="gray"
-             // keyboardType={'default'}
-              autoCapitalize="none"
-              onChangeText={(value) => this.setState({ disigna: value })}
-              value={this.state.disigna}
+           
+            <View style={{ flex: 1, color: '#5C0731' }}>
+              <Text style={styles.input_title}>Designation</Text>
+              <Text style={styles.input}>{this.state.disigna}</Text>
+            </View>
 
-            />
           </View>
+
           <View style={styles.EdittextStyle}>
+
             <Image source={require('./images/email.png')} style={styles.ImageStyle} />
-            <TextInput
-              style={{ flex: 1, color: '#5C0731' }}
-              placeholder="Email"
-              underlineColorAndroid="transparent"
-              placeholderTextColor="gray"
-              keyboardType={'email-address'}
-              autoCapitalize="none"
-              onChangeText={(value) => this.setState({ email: value })}
-              value={this.state.email}
+           
+            <View style={{ flex: 1, color: '#5C0731' }}>
+              <Text style={styles.input_title}>Email</Text>
+              <Text style={styles.input}>{this.state.email}</Text>
+            </View>
 
-            />
           </View>
-
           <View style={styles.EdittextStyle}>
+
             <Image source={require('./images/phone.png')} style={styles.ImageStyle} />
-            <TextInput
-              style={{ flex: 1, color: '#5C0731' }}
-              placeholder="Phone Number"
-              underlineColorAndroid="transparent"
-              placeholderTextColor="gray"
-              keyboardType={'numeric'}
-              autoCapitalize="none"
-              onChangeText={(value) => this.setState({ phone: value })}
-              value={this.state.phone}
+           
+            <View style={{ flex: 1, color: '#5C0731' }}>
+              <Text style={styles.input_title}>Phone Number</Text>
+              <Text style={styles.input}>{this.state.phone}</Text>
+            </View>
 
-            />
           </View>
-
 
 
         </View>
-<TouchableOpacity 
-onPress={() => this.myfun()}>
-<Text style={{ marginTop:10, color: '#5c0831',alignSelf: "center", fontWeight: "bold",fontSize: 14,borderBottomWidth:1,borderBottomColor: "#CFC9CA",}}>
-          CHANGE PASSWORD
+        {/* <TouchableOpacity
+          onPress={() => { this.props.navigation.navigate('change_password') }}>
+          <Text style={{ marginTop: 10, color: '#003342', alignSelf: "center", fontWeight: "bold", fontSize: 14, borderBottomWidth: 1, borderBottomColor: "#CFC9CA", }}>
+            CHANGE PASSWORD
           </Text>
 
-</TouchableOpacity >
-        
-
-        <View style={{ flex: 1, flexDirection: "row", justifyContent: 'center' }}>
+        </TouchableOpacity > */}
 
 
-          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[ '#2B691D', '#164E2F', '#003342' ]}
-            style={styles.buttonStyle}
-            onPress={() => {
-              this.props.navigation.navigate('Sec5_nominee');
-            }}>
-            <Text style={styles.buttonText}>
-             Save
-  </Text>
-          </LinearGradient>
-         
-          <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={[ '#5C0731', '#4B1432', '#392033' ]}
-            style={styles.buttonStyle1}>
-            <Text style={styles.buttonText}>
-            Cancel
-  </Text>
-          </LinearGradient>
-        </View>
-
+        {/* <Text style={styles.input}>{profile_img}</Text> */}
 
 
 
@@ -186,6 +130,7 @@ onPress={() => this.myfun()}>
 
 
 const styles = StyleSheet.create({
+
   container: {
     backgroundColor: '#F0F0F0',
     flex: 1,
@@ -194,9 +139,10 @@ const styles = StyleSheet.create({
   },
 
 
+
   title:
   {
-    color: '#5c0831',
+    color: '#003342',
     marginTop: 15,
     marginBottom: 10,
     alignSelf: "center",
@@ -205,59 +151,56 @@ const styles = StyleSheet.create({
 
   },
 
-  
+
   EdittextStyle: {
     flexDirection: 'row',
-
     alignSelf: 'center',
     width: '85%',
     height: 40,
     borderColor: 'gray',
-
     height: 40,
-    borderBottomColor:'#CFC9CA',
+    borderBottomColor: '#CFC9CA',
     borderBottomWidth: 1,
     borderBottomEndRadius: 5,
     margin: 10,
     color: 'white',
   },
+
+  
   ImageStyle: {
     padding: 10,
     margin: 5,
     height: 25,
     width: 25,
     resizeMode: 'stretch',
-    alignItems: 'center'
+    alignItems: 'center',
+    right: 5,
   },
 
-  buttonStyle: {
-    width: '45%',
-    height: 45,
-    padding: 10,
-    marginTop: 35,
-    marginRight: 10,
-    backgroundColor: '#5c0831',
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 36
-  },
+
+
+
+
+
+
+
+
 
   buttonStyle1: {
-    width: '45%',
+    width: '80%',
     height: 45,
     padding: 10,
     marginTop: 35,
-    backgroundColor: '#5c0831',
+    backgroundColor: '#003342',
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-
     marginBottom: 36
 
   },
+
   buttonText: {
-    fontSize: 22,
+    fontSize: 14,
     fontFamily: 'Gill Sans',
     textAlign: 'center',
     fontWeight: 'bold',
@@ -265,12 +208,22 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     backgroundColor: 'transparent',
   },
-  textStyle: {
-    fontSize: 20,
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
 
+
+  input_title:
+  {
+    fontSize: 10,
+    color: '#313131',
   },
+
+  input: {
+    fontSize: 14, color: '#003342',
+    borderBottomEndRadius: 1,
+    borderBottomColor: "#e0e0e0",
+    borderBottomWidth: 1,
+    paddingBottom: 15,
+    fontWeight: "bold",
+  }
 });
+
 export default popup_form;

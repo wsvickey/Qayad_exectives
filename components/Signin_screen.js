@@ -1,32 +1,36 @@
 import * as React from 'react';
 import {KeyboardAvoidingView, Keyboard,Text, View, StyleSheet,Image,StatusBar,AsyncStorage,
-  TextInput,ToastAndroid,TouchableOpacity,Alert,ScrollView, } from 'react-native';
+  TextInput,ToastAndroid,TouchableHighlight,Alert,ScrollView,Switch } from 'react-native';
 
   import DeviceInfo from 'react-native-device-info';
-
+  import AnimateLoadingButton from 'react-native-animate-loading-button';
 export default class login_screen extends React.Component {
   static navigationOptions = { header: null };
 
-  state = {
-  username: '', 
-  password: ''
-};
+
 constructor(props){
   super(props)
- 
+  this.toggleSwitch = this.toggleSwitch.bind(this);
+ this.state={
+  username: '', 
+  password: '',
+  eye: true
+ }
 }
 
-
+toggleSwitch() {
+  this.setState({ eye: !this.state.eye});
+}
   render() 
   
   {
    const { text, onPress} = this.props;
    const {navigate} = this.props.navigation;
     return (
-      <ScrollView style={{width:'100%',backgroundColor:'#5c0931'}}>
+      <ScrollView style={{width:'100%',backgroundColor:'#003342'}}>
      <KeyboardAvoidingView style={styles.container} >
   
-     <StatusBar backgroundColor="#5c0831" barStyle="light-content" />
+     <StatusBar backgroundColor="#003342" barStyle="light-content" />
 
       
         <Image 
@@ -63,11 +67,17 @@ constructor(props){
       placeholder="Enter Password"
       underlineColorAndroid="transparent"
       placeholderTextColor = "#fff"
+      secureTextEntry={this.state.eye} 
             autoCapitalize = "none"
             onChangeText={(value) => this.setState({password: value})}
             value={this.state.password}
   />
-
+ <Switch 
+ thumbColor="#fff"
+  trackColor={{true: 'gray', false: 'white'}}
+          onValueChange={this.toggleSwitch}
+          value={!this.state.eye}
+        /> 
 </View>
 
           
@@ -82,17 +92,31 @@ constructor(props){
               }>
                 
                 Forget Password</Text>
-     <TouchableOpacity style={styles.buttonStyle}
-			 onPress={() => 
-            {
+                <View style={{ flex: 1, justifyContent: 'center',marginTop:150, }}>
+            <AnimateLoadingButton
+              ref={c => (this.loadingButton = c)}
+              width={300}
+              height={45}
+              title="Login"
+              titleFontSize={18}
+              titleFontFamily="nexa_bold"
+              titleColor="#202646"
+              backgroundColor="#FFF"
+              activityIndicatorColor="#003342"
+              borderRadius={4}
+              onPress={() => {
+                this.loadingButton.showLoading(true);
 
          if (this.state.username.length == 0) {
+          this.loadingButton.showLoading(false);
            ToastAndroid.show('Please Enter Mobile Number', ToastAndroid.SHORT);
            return;
          } else if (this.state.username.length <= 10) {
+          this.loadingButton.showLoading(false);
            ToastAndroid.show('Please Enter Correct Mobile Number', ToastAndroid.SHORT);
            return;
          } else if (this.state.username.length >= 12) {
+          this.loadingButton.showLoading(false);
            ToastAndroid.show('Please Enter Correct Mobile Number', ToastAndroid.SHORT);
            return;
          }
@@ -106,15 +130,8 @@ constructor(props){
                 ToastAndroid.show(this.state.username,ToastAndroid.SHORT);
                 //Handle LOGIN
                let deviceId = DeviceInfo.getDeviceId();
-//                var SharedPreferences = require('react-native-shared-preferences');
-//                SharedPreferences.setName("auth");
-// //                SharedPreferences.getItem("authid", function(value){
-// //                 console.log(value);
-// //                 aid=value;
-// //               });
-// // alert(aid);
-                
-fetch('http://amaapi.qayad.com/api/',{
+
+fetch('https://amaapi.qayad.com/api/',{
                   method:'post',
                   headers: {
                     'Accept': 'application/json',
@@ -132,35 +149,41 @@ fetch('http://amaapi.qayad.com/api/',{
                    .then((responseJson) => {
                        // alert(JSON.stringify(responseJson));
                        // alert((responseJson[0].authc));
-                      
+                       this.loadingButton.showLoading(false);
                     if(responseJson[0].status=='false'){
-                      alert("Invalide Login , Try Again");
+                      //alert("Invalide Login , Try Again");
+                      ToastAndroid.show('Invalide Login , Try Again', ToastAndroid.SHORT);
                       //this.props.navigation.navigate('Second', { Email: UserEmail });
                      //this.props.navigation.navigate('registration');
                     }else if(responseJson[0].status=='true'){
-                      //alert(responseJson[0].status);
-                      //this.props.navigation.navigate('Second', { Email: UserEmail });
-                    //  SharedPreferences.setItem("authid",responseJson[0].authc);
-
+                     // alert(JSON.stringify(responseJson));
+                      
+                
                       AsyncStorage.setItem('Auth', responseJson[0].authc);
-                     this.props.navigation.navigate('Dashboard');
+                      AsyncStorage.setItem('login', 'true');
+                   
+                      AsyncStorage.setItem('fullname', responseJson[0].fullname);
+                      AsyncStorage.setItem('profile_img', responseJson[0].profile_img);
+                      AsyncStorage.setItem('user_designation', responseJson[0].user_designation);
+                  AsyncStorage.setItem('u_email', responseJson[0].u_email);
+                  AsyncStorage.setItem('u_mobile', responseJson[0].u_mobile);
+                    this.props.navigation.navigate('Dashboard');
                     }
                   
                   
                   }).catch((error) => {
                     console.error(error);
+                    this.loadingButton.showLoading(false);
                   });
 
             }
             
             }
-            
-		  >
-         
-			 
-       <Text style={styles.textStyle}>Login</Text>
-       
-		  </TouchableOpacity>
+      
+     
+
+      />
+    </View>
       
    
  </KeyboardAvoidingView>
@@ -174,7 +197,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width:'100%',
   
-    backgroundColor: '#5c0831',
+    backgroundColor: '#003342',
     alignItems: 'center',
   
   

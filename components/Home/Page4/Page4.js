@@ -1,139 +1,273 @@
-//This is an example code for NavigationDrawer//
 import React, { Component } from 'react';
-//import react in our code.
-import { StyleSheet, View, Text, Image, ScrollView, Dimensions, KeyboardAvoidingView, TouchableOpacity ,ImageBackground} from 'react-native';
-// import all basic components
-import { Dropdown } from 'react-native-material-dropdown';
-const screenWidth = Math.round(Dimensions.get('window').width);
-export default class Page4 extends Component {
-  //Screen1 Component
-  render() {
-    let data = [ {
-      value: 'Shops',
-    }, {
-      value: 'Food Court',
-    }, {
-      value: 'Kids Area',
-    }, {
-      value: 'Office',
-    }, {
-      value: 'Apartments',
-    } , {
-      value: 'Suits',
-    }];
+import {
+  View, FlatList, ActivityIndicator, AsyncStorage,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity
+} from 'react-native';
+import { ListItem, SearchBar } from 'react-native-elements';
+import DeviceInfo from 'react-native-device-info';
+let deviceId, authvalue;
+
+//import Database from '../../Database/database';
+//const db = new Database();
+class Page4 extends Component {
+  static navigationOptions = ({ navigation }) => {
+    return {
+
+      // headerRight: () => (
+
+      //   <TouchableOpacity
+      //     onPress={
+      //       () => navigation.navigate('contact_add')}>
+      //     <Image
+      //       style={{ width: 25, height: 25, marginRight: 10 }}
+      //       source={require('../../images/edit-icon.png')}
+      //       on
+      //     />
+      //   </TouchableOpacity>
+      // ),
+
+    };
+  };
+  constructor (props) {
+    super(props);
+
+    this.state = {
+      loading: false,
+      data: [],
+      error: null,
+    };
+
+    this.arrayholder = [];
+  }
+
+
+  async componentDidMount() {
+    authvalue = await AsyncStorage.getItem('Auth');
+    this.makeRemoteRequest();
+    this.focusListener = this.props.navigation.addListener('didFocus', () => {
+      this.makeRemoteRequest()
+    })
+  }
+  componentWillUnmount() {
+    this.focusListener.remove()
+  }
+  makeRemoteRequest = () => {
+    deviceId = DeviceInfo.getDeviceId();
+
+    this.setState({ loading: true });
+    if (authvalue !== null) {
+      fetch('https://amaapi.qayad.com/api/', {
+
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+          mode: "8D8x0Sbnj89VrQDMcITyDw==",
+          led_type: "5WNLiudfoKY=",
+          adid: deviceId,
+          auth: authvalue,
+        })
+
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          this.setState({
+            data: responseJson.QayadLeads,
+            error: responseJson.error || null,
+            loading: false,
+          });
+
+          // alert( JSON.stringify(this.state.data)  );
+
+
+
+          this.arrayholder = responseJson.QayadLeads;
+
+
+          
+        })
+
+        .catch((error) => {
+          console.log(error);
+
+          this.setState({ error, loading: false });
+        })
+        .finally(() => {
+          this.setState({
+            loading: false
+          })
+        });
+    }
+
+
+
+  };
+
+  renderItem = ({ item }) => {
     return (
-      <ScrollView style={{width:'100%'}}>
-      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-        <ImageBackground
+      <TouchableOpacity style={{ backgroundColor: "#F0F0F0", width: '100%', height: 60, flex: 1, flexDirection: 'row', marginBottom: 3, marginLeft: 5 }}
+      onPress={() =>
+        this.props.navigation.navigate('contact_view', {
+          leadid: item.id,
+          client_name: item.client_name,
+          client_number: item.client_number,
+          assign_date: item.assign_date,
+          duration: item.duration,
+          agent_name: item.agent_name,
+        })
+        }>
+        <View style={{ width: '97%', flex: 1, flexDirection: "column", }}>
+       
+        <View style={{ height: '90%', flex: 1, flexDirection: "row", }}>
+        <View style={{ width: '50%', flex: 1, flexDirection: "column", }}>
 
-  source={require('../../images/back_icon.png')} 
-  style={{
-    width: "90%",
-    height: 180,
-    justifyContent: "center",
-    position: 'absolute',
-  bottom:0,
-  right:0,
-  flexDirection:'row-reverse'
-  }}
- 
->
- 
-</ImageBackground>
-        <View style={{ width:  '100%', height: 55, justifyContent: 'center'}}>
-          <Text style={styles.title}>New Registration Application Form</Text>
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.client_name}</Text>
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.client_number}</Text>
+
+</View>
+
+<View style={{ width: '30%', flex: 1, flexDirection: 'column', }}>
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.assign_date}</Text>
+<Text style={{ color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.duration}</Text>
+
+
+</View>
+           
+          </View>
+         
+          <View style={{ height: '10%', flex: 1, flexDirection: "row", alignItems:"center"}}>
+
+          <Text style={{ width: '30%',color: '#003342', fontWeight: 'bold', fontSize: 12, }} > Agent Name</Text>
+         <Text style={{ width: '70%',color: '#003342', fontWeight: 'normal', fontSize: 12 }} > {item.agent_name}</Text>
+
+</View>
+          
+          
         </View>
 
-        <View style={{ width:  '90%', height: 80,alignSelf:'center' , flexDirection: 'column',marginLeft:15,marginRight:15,marginTop:15 }}>
 
-          <Dropdown
-            label='Select Property type'
-            labelPadding={0}
-            labelHeight={5}
-            containerStyle={{ width: '100%' }}
-            data={data}
-          />
+        <View style={{ width: '3%', backgroundColor: "#003342", justifyContent: 'center', alignContent: 'center' }} >
+          <Image style={{ width: 10, height: 10, resizeMode: 'stretch', alignSelf: 'center' }} source={require('../../images/right-arrow.png')} />
 
         </View>
-        <View style={{ width:  '90%', height: 80,alignSelf:'center'   }}>
 
-          <Dropdown
-            label='Select Floor Selection'
-            labelPadding={0}
-            labelHeight={5}
-            containerStyle={{ width: '100%' }}
-            data={data}
-          />
+      </TouchableOpacity>
+    )
+  }
+  renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: '86%',
+          backgroundColor: '#CED0CE',
+          marginLeft: '14%',
+        }}
+      />
+    );
+  };
+
+  searchFilterFunction = text => {
+    this.setState({
+      value: text,
+    });
+
+    const newData = this.arrayholder.filter(item => {
+      const itemData = `${item.client_name.toUpperCase()} ${item.client_number} ${item.duration} ${item.agent_name}`;
+    
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({
+      data: newData,
+    });
+  };
+
+  renderHeader = () => {
+    return (
+      <TouchableOpacity
+        onPress={
+          () => navigation.navigate('contact_add')}>
+        <Image
+          style={{ width: 25, height: 25, marginRight: 10 }}
+          source={require('../../images/add_contact.png')}
+
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  render() {
+
+    return (
+      <View style={styles.container}>
+        <SearchBar
+          placeholder="Type Here..."
+          lightTheme
+          round
+          inputContainerStyle={{ backgroundColor: '#fff' }}
+          onChangeText={text => this.searchFilterFunction(text)}
+          autoCorrect={false}
+          value={this.state.value}
+        />
+        <View style={{ backgroundColor: "#fff", width: '100%', height: 40, flexDirection: 'row', marginBottom: 3 }}
+        >
+
+
+          <Text style={{ width: '50%', color: '#003342', alignSelf: 'center', fontWeight: 'bold', fontSize: 12, paddingLeft: 5 }} > Name /  Phone No</Text>
+
+          <Text style={{ width: '50%', color: '#003342', alignSelf: 'center', fontWeight: 'bold', fontSize: 12 }} >  Date / Duration</Text>
+
+
+
 
         </View>
-        <View style={{  width:  '90%', height: 80,alignSelf:'center'  }}>
-
-          <Dropdown
-            label='Select Property Selection'
-            labelPadding={0}
-            labelHeight={5}
-            containerStyle={{ width: '100%' }}
-            data={data}
-          />
-
-        </View>
-  
-        <View style={{   width:  '90%', height: 80,alignSelf:'center' }}>
-          <TouchableOpacity style={styles.buttonStyle}
-           onPress={() => 
-            {
-              
-              //Handle LOGIN
-                this.props.navigation.navigate('Section2');
-            }
-          }
-
-
-          >
-
-            <Text style={styles.textStyle}>Next</Text>
-          </TouchableOpacity>
-
-        </View>
-      </KeyboardAvoidingView>
-      </ScrollView>
+        {/* <Text> {JSON.stringify(this.state.data)}</Text>  */}
+        {this.state.loading ? <ActivityIndicator style={{
+          position: 'absolute', left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          alignItems: 'center',
+          justifyContent: 'center'
+        }} size="large" color="#003342" /> : (
+            <FlatList
+              data={this.state.data}
+              renderItem={this.renderItem}
+              keyExtractor={(item, index) => item.id}
+              extraData={this.state}
+            //  ItemSeparatorComponent={this.renderSeparator}
+            // ListHeaderComponent={this.renderHeader}
+            />
+          )}
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: 'column',
     backgroundColor: '#fff',
+    padding: 0,
 
+    flex: 1,
+    flexDirection: 'column'
   },
-
-  title: {
-    color: '#5C0731',
-    textAlign: "center",
-    fontWeight: 'bold',
+  title:
+  {
+    color: '#003342',
+    padding: 5,
+    alignSelf: "center",
+    fontWeight: "bold",
     fontSize: 18,
-  }, 
-  buttonStyle: {
-  
-    height: 45,
-    padding: 10,
-    backgroundColor: '#5c0831',
-    borderRadius: 5,
-
-    justifyContent: 'center',
-    alignItems: 'center',
- 
-    marginBottom: 36
-
-  },
-  textStyle: {
-    fontSize: 20,
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
 
   },
 
 });
+export default Page4;
