@@ -36,7 +36,7 @@ class Page6 extends Component {
 
     this.state = {
       loading: false,
-      da  [],
+      data: [],
       error: null,
     };
 
